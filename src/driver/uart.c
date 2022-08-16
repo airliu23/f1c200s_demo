@@ -88,15 +88,16 @@ void uart_send_bytes(struct uart_type *uart,const uint8 *data)
     }
 }
 
-void uart_send_num(struct uart_type *uart,int num,int decimal)
+void uart_send_num(struct uart_type *uart,int num,int decimal,int8 len)
 {
     int data = 0;
-    if (num == 0) {
+    if (num == 0 && len <= 0) {
         return;
     }
     data = num % decimal;
     num = num / decimal;
-    uart_send_num(uart,num,decimal);
+    len = len - 1;
+    uart_send_num(uart,num,decimal,len);
     switch (decimal){
     case 16:
         uart_send_byte(uart,hex_num[data]);
@@ -124,10 +125,10 @@ void uart_send(struct uart_type *uart,const char *fmt,...)
             format = false;
             switch (*fmt) {
             case 'd':
-                uart_send_num(uart,va_arg(args,int),10);
+                uart_send_num(uart,va_arg(args,int),10,1);
                 break;
             case 'x':
-                uart_send_num(uart,va_arg(args,int),16);
+                uart_send_num(uart,va_arg(args,int),16,1);
                 break;
             case 's':
                 uart_send_bytes(uart,va_arg(args,char *));

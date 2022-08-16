@@ -3,7 +3,7 @@
 #
 
 ARCH ?= arm
-CROSS_COMPILE ?= arm-none-eabi-
+CROSS_COMPILE ?= ./tools/toolchain/bin/arm-none-eabi-
 
 CC 		:= $(CROSS_COMPILE)gcc
 AS 		:= $(CC) -x assembler-with-cpp

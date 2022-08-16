@@ -2,63 +2,60 @@
  *	SPDX-License-Identifier:	GPL-2.0+
  */
 
-
-#define STACK_BASE              (0x00010400)        //part of SRAM can be used as stack
-
-#define CCU_BASE                (0x01C20000)        // CCU start address
-#define CCU_PLL_STABLE_TIME     (CCU_BASE + 0x200)  
-#define CCU_PLL_PERIPH_REG      (CCU_BASE + 0x28)
-#define CCU_PLL_AHB_APB_REG     (CCU_BASE + 0x54)
-
-
-#define GPIO_BASE               (0x01c20800)        // GPIO start address
-#define GPIOE_BASE              (GPIO_BASE + 0x24 * 3)  // GPIOE start address
-#define GPIOE_CFG0_REG          (GPIOE_BASE + 0x00)
-#define GPIOE_DATA_REG          (GPIOE_BASE + 0x10)
-#define GPIOE_DRV0_REG          (GPIOE_BASE + 0x14)
-#define GPIOE_PUL0_REG          (GPIOE_BASE + 0x1c)
+#define CONFIG_STACK_LENGTH     0x400
 
     .section .text
     .align 4
-	.global _start
     .global main
-
+    .global _start
 _start:
+    /**
+     * bss section clear 0
+     */
+    ldr r0,=bss_start
+    ldr r1,=bss_end
+    mov r3,#0
+b_loop:
+    str r3,[r0]
+    add r0,#4
+    cmp r0,r1
+    beq bc_done
+    b b_loop
+bc_done:
+    /**
+     * set sp pointer
+     */
     ldr r0,=stackend
     mov sp,r0
 
+    //msr cpsr_c,#0x52
+
+    /**
+     * goto c world
+     */
     bl main
 
-    // GPIO init
-    ldr r0,= GPIOE_CFG0_REG
-    ldr r1,= 0x1111 // all output
-    str r1,[r0]
-
-    ldr r0,= GPIOE_DRV0_REG
-    ldr r1,= 0xff // all drive level 3
-    str r1,[r0]
-
-    ldr r0,= GPIOE_PUL0_REG
-    ldr r1,= 0x55 // all pull-up
-    str r1,[r0]
-
-    ldr r0,= GPIOE_DATA_REG
-    mov r1,#0x0f
-    str r1,[r0]
-    
-loop:
-    ldr r0,= GPIOE_DATA_REG
-    mov r1,#0x0f
-    str r1,[r0]
-    bl delay
+    .section .vector
+    .global __vectors
+__vectors:
+    bl _start
+    bl default_handler
+    bl default_handler
+    bl default_handler
+    bl default_handler
+    bl default_handler
+    bl default_handler
+    bl default_handler
 
 
-    ldr r0,= GPIOE_DATA_REG
-    mov r1,#0x00
-    str r1,[r0]
-    bl delay
 
-    b loop
+    .align 2
+    .section .text
+    .weak default_handler
+    .type default_handler,%function
+default_handler:
+    bx lr
+    .size default_handler,. - default_handler
 
     .align 4
     .global delay
@@ -71,13 +68,17 @@ delay_loop:
     sub r2, r2, #1
     b delay_loop
 
+    .align 4
+    .global get_sp
+get_sp:
+    mov r0,sp
+    bx lr
+
 
     .section .bss
     .align 4
-    .global stackbase
-    .global stackend
 stackbase:
-    .space 0x400
+    .space CONFIG_STACK_LENGTH
 stackend:
 
 
