@@ -88,7 +88,7 @@ void uart_send_bytes(struct uart_type *uart,const uint8 *data)
     }
 }
 
-void uart_send_num(struct uart_type *uart,int num,int decimal,int8 len)
+void __uart_send_num(struct uart_type *uart,uint32 num,uint8 decimal,int8 len)
 {
     int data = 0;
     if (num == 0 && len <= 0) {
@@ -109,6 +109,15 @@ void uart_send_num(struct uart_type *uart,int num,int decimal,int8 len)
     default:
         break;
     }
+}
+
+void uart_send_num(struct uart_type *uart,int num,uint8 decimal,int8 len)
+{
+    if (decimal == 10 && num < 0) {
+        uart_send_byte(uart,'-');
+        num = -num;
+    }
+    __uart_send_num(uart,num,decimal,len);
 }
 
 void uart_send(struct uart_type *uart,const char *fmt,...)
