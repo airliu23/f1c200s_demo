@@ -11,8 +11,7 @@ SECTIONS
     .text :
     {
         . = ALIGN(4);
-        src/start.o(.text)
-        src/start.o(.vector)
+        *(.vectors*)
         *(.text*)
     } > .rom
     .rodata :

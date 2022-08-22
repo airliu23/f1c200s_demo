@@ -80,7 +80,7 @@ objdump:$(OUTPUT).elf
 	@$(OBJDUMP) -S $^
 
 download:
-	@sudo dd if=$(OUTPUT)_SD.bin of=/dev/sda bs=1024 seek=8 conv=fdatasync 
+	@sudo dd if=$(OUTPUT)_SD.bin of=/dev/sdb bs=1024 seek=8 conv=fdatasync 
 
 tools:$(MKBOOT)
 	@echo $(C_SRC)
@@ -88,7 +88,7 @@ tools:$(MKBOOT)
 	@echo $(OBJS)
 
 clean:FORCE
-	rm $(OBJS) $(OUTPUT)*
+	rm $(OUTPUT)*
 
 PHONY += FORCE
 FORCE:
