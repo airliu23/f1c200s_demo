@@ -20,7 +20,7 @@
     .align 4
     .global __vectors
 __vectors:
-    b _start
+    b __start
     ldr pc,=undefined_instruction
     ldr pc,=software_interrupt
     ldr pc,=prefetch_abort

@@ -12,8 +12,8 @@
 
     .section .text
     .align 4
-    .global _start
-_start:
+    .global __start
+__start:
     /*
 	 * set the cpu to SVC32 mode
 	 */

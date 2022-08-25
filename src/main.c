@@ -1,6 +1,7 @@
 #include "inc/gpio.h"
 #include "inc/ccu.h"
 #include "inc/uart.h"
+#include "inc/intc.h"
 
 void en_irq(void) 
 {
@@ -11,6 +12,7 @@ void en_irq(void)
     );
 }
 extern void delay();
+extern void gpio_intc(void);
 
 int main()
 {
@@ -31,28 +33,30 @@ int main()
     gpio_init(GPIOD,GPIO_PIN_0,&gpio_cfg);
 
     uart_init(UART2,&cfg);
+    intc_init();
 
 
-    for (i = 0x00;i < 0x20;i++) {
+    for (i = 0x00;i < (uint32 *)0x20;i++) {
         uart_send(UART2,"addr:0x%x -> 0x%x\n",i,*i);
     }
 
     en_irq();
 
-    *((uint32 *)(0x01C20400 + 0x24)) |= 1 << 6;
+    intc_enable(INTC_PIOD,1,gpio_intc);
+    //*((uint32 *)(0x01C20400 + 0x24)) |= 1 << 6;
     *((uint32 *)(0x01C20800 + 0x200)) |= 0;
     *((uint32 *)(0x01C20800 + 0x210)) |= 1;
+    
 
     while(true) {
         delay();
-        uart_send(UART2,"%x,%x\n",*((uint32 *)(0x01C20400 + 0x14)),*((uint32 *)(0x01C20800 + 0x214)));
+        uart_send(UART2,"%x,%x\n",INTC->pending[0],INTC->pending[1]);
     }
     return 0;
 }
 
-void do_irq(void)
+void gpio_intc(void)
 {
     uart_send(UART2,"irq running\n");
     *((uint32 *)(0x01C20800 + 0x214)) = 0xffffffff;
-    *((uint32 *)(0x01C20400 + 0x24)) = 0xffffffff;
 }

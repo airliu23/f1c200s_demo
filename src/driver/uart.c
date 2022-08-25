@@ -97,7 +97,7 @@ void __uart_send_num(struct uart_type *uart,uint32 num,uint8 decimal,int8 len)
     data = num % decimal;
     num = num / decimal;
     len = len - 1;
-    uart_send_num(uart,num,decimal,len);
+    __uart_send_num(uart,num,decimal,len);
     switch (decimal){
     case 16:
         uart_send_byte(uart,hex_num[data]);
@@ -140,7 +140,7 @@ void uart_send(struct uart_type *uart,const char *fmt,...)
                 uart_send_num(uart,va_arg(args,int),16,1);
                 break;
             case 's':
-                uart_send_bytes(uart,va_arg(args,char *));
+                uart_send_bytes(uart,va_arg(args,uint8 *));
                 break;
             case 'c':
                 uart_send_byte(uart,va_arg(args,int));
