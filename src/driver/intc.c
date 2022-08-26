@@ -5,10 +5,10 @@ static intc_func intc_funcs[INTC_MAX];
 
 static void default_handler(void)
 {
-    uart_send(UART2,"%s\n",__func__);
+    
 }
 
-void __intc_mask(uint8 module,uint8 mask)
+static void __intc_mask(uint8 module,uint8 mask)
 {
     if (mask) {
         INTC->mask[module / 32] |= mask << (module % 32);
@@ -16,7 +16,7 @@ void __intc_mask(uint8 module,uint8 mask)
         INTC->mask[module / 32] &= ~(mask << (module % 32));
     }
 }
-void __intc_enable(uint8 module,uint8 en)
+static void __intc_enable(uint8 module,uint8 en)
 {
     if (en) {
         INTC->en[module / 32] |= en << (module % 32);
@@ -24,7 +24,7 @@ void __intc_enable(uint8 module,uint8 en)
         INTC->en[module / 32] &= ~(en << (module % 32));
     }
 }
-void __intc_set_priority(uint8 module,uint8 level)
+static void __intc_set_priority(uint8 module,uint8 level)
 {
     
 }
@@ -44,9 +44,9 @@ void intc_init(void)
     }
 }
 
-
-
-
+/**
+ * irq run function
+ */
 void do_irq(void)
 {
     uint32 pending,i,index;

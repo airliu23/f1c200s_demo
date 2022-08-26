@@ -2,6 +2,7 @@
 #define __F1C200S_GPIO_H__
 
 #include "types.h"
+#include "intc.h"
 
 enum {
     GPIO_PIN_0 = 0,
@@ -35,6 +36,11 @@ struct gpio_cfg {
     uint8 pull      : 2;
 };
 
+struct gpio_ext_cfg {
+    uint8 ext_mode;
+    intc_func func;
+};
+
 struct gpio_type {
     __IO uint32 cfg[4];
     __IO uint32 data;
@@ -42,14 +48,27 @@ struct gpio_type {
     __IO uint32 pull[2];
 };
 
-#define GPIOA   ((struct gpio_type *)(0x01C20800 + 0 * 0x24))
-#define GPIOB   ((struct gpio_type *)(0x01C20800 + 1 * 0x24))
-#define GPIOC   ((struct gpio_type *)(0x01C20800 + 2 * 0x24))
-#define GPIOD   ((struct gpio_type *)(0x01C20800 + 3 * 0x24))
-#define GPIOE   ((struct gpio_type *)(0x01C20800 + 4 * 0x24))
+struct gpio_ext_type {
+    __IO uint32 ext_cfg[4];
+    __IO uint32 ext_en;
+    __IO uint32 ext_pending;
+    __IO uint32 ext_debounce;
+};
+
+#define GPIOA           ((struct gpio_type *)(0x01C20800 + 0 * 0x24))
+#define GPIOB           ((struct gpio_type *)(0x01C20800 + 1 * 0x24))
+#define GPIOC           ((struct gpio_type *)(0x01C20800 + 2 * 0x24))
+#define GPIOD           ((struct gpio_type *)(0x01C20800 + 3 * 0x24))
+#define GPIOE           ((struct gpio_type *)(0x01C20800 + 4 * 0x24))
+#define GPIOF           ((struct gpio_type *)(0x01C20800 + 5 * 0x24))
+
+#define GPIOD_EXT       ((struct gpio_ext_type *)(0x01C20800 + 0x200))
+#define GPIOE_EXT       ((struct gpio_ext_type *)(0x01C20800 + 1 * 0x20 + 0x200))
+#define GPIOF_EXT       ((struct gpio_ext_type *)(0x01C20800 + 2 * 0x20 + 0x200))
 
 /* interface */
 bool gpio_init(struct gpio_type *gpio,int num,struct gpio_cfg *cfg);
+bool gpio_ext_init(struct gpio_type *gpio,int num,struct gpio_ext_cfg *cfg);
 bool gpio_set_value(struct gpio_type *gpio,int num,int value);
 
 #endif

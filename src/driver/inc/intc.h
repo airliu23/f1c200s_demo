@@ -71,6 +71,7 @@ struct intc_type {
 
 typedef void (*intc_func)(void);
 
+/********************* intc interface **************************/
 void intc_init(void);
 void intc_enable(uint8 module,uint8 en,intc_func func);
 

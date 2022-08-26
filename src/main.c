@@ -23,17 +23,18 @@ int main()
         .parity_bits = 0,
         .band_rate = 115200,
     };
-    struct gpio_cfg gpio_cfg = {
-        .func_cfg = 6,
-        .multi_drv =3,
-        .pull = 0,
+    struct gpio_ext_cfg ext_cfg = {
+        .ext_mode = 0,
+        .func = gpio_intc,
     };
 
     system_set_clock_default();
-    gpio_init(GPIOD,GPIO_PIN_0,&gpio_cfg);
+    //gpio_init(GPIOD,GPIO_PIN_0,&gpio_cfg);
 
     uart_init(UART2,&cfg);
     intc_init();
+
+    gpio_ext_init(GPIOD,GPIO_PIN_0,&ext_cfg);
 
 
     for (i = 0x00;i < (uint32 *)0x20;i++) {
@@ -42,10 +43,10 @@ int main()
 
     en_irq();
 
-    intc_enable(INTC_PIOD,1,gpio_intc);
+    //intc_enable(INTC_PIOD,1,gpio_intc);
     //*((uint32 *)(0x01C20400 + 0x24)) |= 1 << 6;
-    *((uint32 *)(0x01C20800 + 0x200)) |= 0;
-    *((uint32 *)(0x01C20800 + 0x210)) |= 1;
+    //*((uint32 *)(0x01C20800 + 0x200)) |= 0;
+    //*((uint32 *)(0x01C20800 + 0x210)) |= 1;
     
 
     while(true) {
@@ -57,6 +58,6 @@ int main()
 
 void gpio_intc(void)
 {
-    uart_send(UART2,"irq running\n");
-    *((uint32 *)(0x01C20800 + 0x214)) = 0xffffffff;
+    uart_send(UART2,"%s running\n",__func__);
+    //*((uint32 *)(0x01C20800 + 0x214)) = 0xffffffff;
 }
