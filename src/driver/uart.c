@@ -24,6 +24,11 @@ struct uart_pin_cfg{
     },
 };
 
+static void do_uart_irq(void)
+{
+    uart_send(UART2,"irq -> %x\n",UART2->rbr);
+}
+
 void uart_init(struct uart_type * uart,const struct uart_cfg *uart_cfg)
 {
     struct gpio_cfg cfg;
@@ -52,6 +57,7 @@ void uart_init(struct uart_type * uart,const struct uart_cfg *uart_cfg)
     gpio_init(uart_pin[index].gpio_tx,uart_pin[index].tx,&cfg);
 
     uart->irq_en = 0x00;  // disable all interrupt
+    uart->fifo_ctrl = 0x37;
     uart->modem_ctrl = 0x00;         // reset Modem
 
     // set divisor of buadrate
@@ -69,6 +75,9 @@ void uart_init(struct uart_type * uart,const struct uart_cfg *uart_cfg)
     uart->line_ctrl |= (uart_cfg->stop_bits) << 2;
     // parity
     uart->line_ctrl |= (uart_cfg->parity_bits) << 3;
+
+    intc_enable(INTC_UART2,1,do_uart_irq);
+    uart->irq_en |= (1 << 0);
 }
 
 bool uart_send_byte(struct uart_type *uart,uint8 data)

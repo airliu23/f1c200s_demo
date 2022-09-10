@@ -11,6 +11,7 @@ SECTIONS
     .text :
     {
         . = ALIGN(4);
+        *start.o
         *(.vectors*)
         *(.text*)
     } > .rom

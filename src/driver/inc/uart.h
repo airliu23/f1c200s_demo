@@ -15,23 +15,23 @@ struct uart_cfg {
 
 struct uart_type {
     union {
-        uint32 rbr;
-        uint32 thr;
-        uint32 dll;
+        __IO uint32 rbr;
+        __IO uint32 thr;
+        __IO uint32 dll;
     };
     union {
-        uint32 dlh;
-        uint32 irq_en;
+        __IO uint32 dlh;
+        __IO uint32 irq_en;
     };
     union {
-        uint32 irq_identity;
-        uint32 fifo_ctrl;
+        __IO uint32 irq_identity;
+        __IO uint32 fifo_ctrl;
     };
-    uint32 line_ctrl;
-    uint32 modem_ctrl;
-    uint32 line_status;
-    uint32 modem_status;
-    uint32 scratch;
+    __IO uint32 line_ctrl;
+    __IO uint32 modem_ctrl;
+    __IO uint32 line_status;
+    __IO uint32 modem_status;
+    __IO uint32 scratch;
 };
 
 #define UART0       ((struct uart_type *)0x01c25000)

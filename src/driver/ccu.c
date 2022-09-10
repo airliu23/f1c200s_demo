@@ -26,6 +26,12 @@ void system_set_clock_default(void)
     /* 600M */
     PLL_PERIPH_CTRL |= (1 << 31);
 
+    *((uint32 *)CCU_BASE + 0x100) = 0xffffffff;
+
+    pll_module_init(SDRAM_MODULE);
+
+    PLL_DDR_CTRL = 0x90100c00;
+
     BUS_DIV_CFG = 0x00003090;
 }
 
